@@ -1,0 +1,35 @@
+{
+    "name": "azulae/ceca",
+    "description": "Package ceca for laravel 8",
+    "keywords": ["ceca", "payment", "pasarela", "sabadell","tpv", "Caja badajoz", "Caja Circulo", "Caja de Burgos", "CajaSur", "Caja Granada", "Caja de guadalajara", "Caja Rioja", "Caixa Laietana", "Caja Murcia", "CajAstur", "Sanostra", "La Caja de Canarias", "Caja navarra", "Caja Canarias", "Caja Cantabria", "Caja Segovia", "CaixaNova", "IberCaja", "CAM", "Caixa Galicia", "Caja de Avila", "BBK", "Caja Vital Kutxa", "Caja de Extremadura", "Kutxa", "Caja duero", "CCM", "Cajasol"],
+    "homepage": "https://github.com/azulae/ceca-laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Juan Antonio",
+            "email": "juan.fernandez@azulae.es",
+            "homepage": "https://azulae.es/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2|^8.0",
+        "laravel/framework": "^6.0|^7.0|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Azulae\\Ceca\\": "src"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Azulae\\Ceca\\CecaServiceProvider"
+            ],
+            "aliases": {
+                "Ceca": "Azulae\\Ceca\\Facades\\Ceca"
+            }
+        }
+    }
+}
