@@ -630,7 +630,7 @@ class TpvCeca
         {
             $price = explode('.', $price);
             $last = array_pop($price);
-            $price = join($price, '').'.'.$last;
+            $price = join('',$price).'.'.$last;
         }
         else
         {
