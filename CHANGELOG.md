@@ -18,3 +18,9 @@ All Notable changes to `Ceca` will be documented in this file
 
 ### Security
 - Nothing
+
+## Version 2.0.0
+
+### Changed
+
+Laravel 9/10 Support

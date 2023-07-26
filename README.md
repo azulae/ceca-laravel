@@ -4,7 +4,7 @@
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
 
-Laravel 6/7/8 package to support payments and cancellations through the CECA online tpv.
+Laravel 6/7/8/9/10 package to support payments and cancellations through the CECA online tpv.
 
 ## Install
 
