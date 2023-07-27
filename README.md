@@ -11,10 +11,9 @@ Laravel 6/7/8/9/10 package to support payments and cancellations through the CEC
 Via Composer
 
 ``` bash
-$ composer require azulae/ceca-laravel
+composer require azulae/ceca-laravel
 ```
 
-## Usage
 
 Ahora debemos cargar nuestro Services Provider dentro del array **'providers'** (config/app.php)
 >Si usas Laravel 5.5 o superior, no necesitas cargar el services provider
@@ -32,9 +31,24 @@ Y finalmente publicamos nuestro archivo de configuración
 ```bash
 php artisan vendor:publish --provider="Azulae\Ceca\CecaServiceProvider"
 ```
->Esto nos creará un archivo llamado *ceca.php* dentro de config, en este archivo debemos configurar nuestra key, url ok y ko.
+>Esto nos creará un archivo llamado *ceca.php* dentro de config, que tomará los valores de configuración de nuestro archivo .env:
+```php
+CECA_URL_PASARELA_PRODUCCION="https://pgw.ceca.es/tpvweb/tpv/compra.action"
+CECA_URL_PASARELA_DESARROLLO="https://tpv.ceca.es/tpvweb/tpv/compra.action"
+CECA_URL_OK=""
+CECA_URL_KO=""
+CECA_CODIGO_COMERCIO="XXXXXXXXX"
+CECA_ACQUIRER_BIN="XXXXXXXXXX"
+CECA_NOMBRE_COMERCIO="COMMERCE_NAME"
+CECA_TERMINAL="00000003"
+CECA_TERMINAL_DESARROLLO="00000003"
+CECA_CLAVE_ENCRIPTACION="XXXXXXXX"
+CECA_CLAVE_ENCRIPTACION_DESARROLLO="XXXXXXXX"
+CECA_MODO="desarrollo" 
+```
+NOTA: los parámetros de CECA_URL_OK y CECA_URL_KO en CECA están en desuso, las redirecciones se configuran en el panel de control del cliente, en https://comercios.ceca.es/webapp/ConsTpvVirtWeb/ConsTpvVirtS
 
-## Uso
+## Usage
 
 Lanzar la petición de pago:
 
