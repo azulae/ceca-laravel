@@ -16,7 +16,7 @@ class TpvCecaTest extends TestCase
         return base64_encode('012345678901234567890123'); // 24 bytes -> 32 caracteres Base64
     }
 
-    protected function tpvCompleto(string $cifrado = null, string $clave = 'clave-de-pruebas'): TpvCeca
+    protected function tpvCompleto(?string $cifrado = null, string $clave = 'clave-de-pruebas'): TpvCeca
     {
         $tpv = new TpvCeca();
         $tpv->setMerchantID('086401247');
