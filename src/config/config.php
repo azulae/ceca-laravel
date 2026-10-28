@@ -11,5 +11,6 @@ return [
     'terminal_desarrollo'       	=> env('CECA_TERMINAL_DESARROLLO', ''),
     'clave_encriptacion'            => env('CECA_CLAVE_ENCRIPTACION', ''),
     'clave_encriptacion_desarrollo' => env('CECA_CLAVE_ENCRIPTACION_DESARROLLO', ''),
+    'cifrado'                       => env('CECA_CIFRADO', 'SHA2'), // SHA2 / HMAC (obligatorio por Cecabank desde 31/12/2026)
     'modo'                          => env('CECA_MODO', 'desarrollo'), // produccion / desarrollo
 ];

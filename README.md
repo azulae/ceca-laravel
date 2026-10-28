@@ -4,7 +4,7 @@
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
 
-Laravel 6/7/8/9/10 package to support payments and cancellations through the CECA online tpv.
+Laravel 6 → 13 package to support payments and cancellations through the CECA (Cecabank) online tpv, con soporte de firma **SHA2** y **HMAC**.
 
 ## Install
 
@@ -44,9 +44,23 @@ CECA_TERMINAL="00000003"
 CECA_TERMINAL_DESARROLLO="00000003"
 CECA_CLAVE_ENCRIPTACION="XXXXXXXX"
 CECA_CLAVE_ENCRIPTACION_DESARROLLO="XXXXXXXX"
+CECA_CIFRADO="HMAC"
 CECA_MODO="desarrollo" 
 ```
 NOTA: los parámetros de CECA_URL_OK y CECA_URL_KO en CECA están en desuso, las redirecciones se configuran en el panel de control del cliente, en https://comercios.ceca.es/webapp/ConsTpvVirtWeb/ConsTpvVirtS
+
+### Firma HMAC (obligatoria por Cecabank antes del 31/12/2026)
+
+Según el [Boletín de Seguridad de Cecabank](https://comercios.ceca.es/), el TPV Virtual exige dos actualizaciones de seguridad:
+
+1. **Ampliación de clave a 32 caracteres** (límite 30/09/2026): nueva clave en el Portal de Administración, campo *"Nueva clave de encripción"*.
+2. **Nuevo sistema de firma HMAC** (límite 31/12/2026): sustituye a la firma SHA2.
+
+Para usar HMAC basta con:
+- Configurar la nueva clave de 32 caracteres (Base64, 24 bytes) en `CECA_CLAVE_ENCRIPTACION`.
+- Añadir `CECA_CIFRADO="HMAC"` al `.env` (o llamar a `Ceca::setCifrado('HMAC')`).
+
+La firma SHA2 sigue disponible (valor por defecto) por compatibilidad, pero **dejará de funcionar en Cecabank el 31/12/2026**.
 
 ## Usage
 
@@ -83,6 +97,7 @@ class CecaController extends Controller
             Ceca::setMerchantID(config('ceca.codigo_comercio'));
             Ceca::setEntorno(config('ceca.modo'));
             Ceca::setClaveEncriptacion($CecaClaveEncriptacion);
+            Ceca::setCifrado(config('ceca.cifrado', 'SHA2'));
             Ceca::setTerminalID($CecaNumeroTerminal)
             Ceca::setAcquirerBIN(config('ceca.acquirer_bin'));
             Ceca::setUrlOk(config('ceca.url_ok'));
@@ -100,7 +115,28 @@ class CecaController extends Controller
 
 ```
 
-Comprobar la respuesta del servicio:
+Comprobar la firma de la notificación del pago (recomendado, compatible con SHA2 y HMAC):
+
+``` php
+<?php
+
+    // Debe configurarse la misma clave y cifrado que en el envío
+    Ceca::setClaveEncriptacion($CecaClaveEncriptacion);
+    Ceca::setCifrado(config('ceca.cifrado', 'SHA2'));
+
+    // true si la Firma recibida es válida (comparación timing-safe)
+    if(Ceca::checkNotificationSignature($request->all()))
+    {
+        // Pago correcto
+        .
+        .
+        .
+    }
+
+?>
+```
+
+Alternativamente, la firma puede comprobarse manualmente (ejemplo con SHA2):
 
 ``` php
 <?php
@@ -136,6 +172,25 @@ Comprobar la respuesta del servicio:
     }
 
 ?>
+```
+
+
+## Compatibilidad con versiones de Laravel
+
+El paquete mantiene **una única base de código** compatible con Laravel 6 a 13: solo utiliza APIs estables (`ServiceProvider`, `publishes`, `config_path`, `Facade`, `bind`), por lo que no son necesarias ramas ni versiones de código distintas por versión de Laravel (el mismo enfoque de paquetes como los de Spatie). La compatibilidad se declara en `composer.json`:
+
+```json
+"laravel/framework": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0"
+```
+
+y se verifica en cada `push` con una **matriz de tests PHP × Laravel** en GitHub Actions (`.github/workflows/run-tests.yml`), usando `orchestra/testbench`. Solo si un paquete dependiera de APIs que cambian entre majors sería necesario publicar ramas/etiquetas distintas por versión.
+
+
+## Testing
+
+``` bash
+composer install
+vendor/bin/phpunit
 ```
 
 
