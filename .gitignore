@@ -17,3 +17,22 @@ Thumbs.db
 .idea/
 
 composer.lock
+mcp-bridge.env
+.azulae/mcp-bridge.env
+.cursor/mcp.json
+.vscode/mcp.json
+
+docker-compose.azulae.yml
+
+# Azulae panel runtime (no commitear — regenerable en cada arranque)
+Dockerfile.azulae.dev
+.azulae/
+.azulae
+/Dockerfile
+docker/nginx/default.conf
+.azulae-initialized
+.copilotignore
+.github/copilot-instructions.md
+.vscode/
+/vendor/
+/vendor.bak-root/

@@ -148,6 +148,12 @@ class TpvCeca
 
     private $_modo;
 
+    /**
+     * @var string $_tipo_anu Opcional 1 Tipo de anulación: 'P' = parcial, 'T' = total (según convenio CECA).
+     *                         Solo se envía en modo Anulacion si tiene valor. NO forma parte de la cadena de firma.
+     */
+    private $_tipo_anu = '';
+
     private $_nameForm;
     private $_idForm;
     private $_submit;
@@ -173,6 +179,7 @@ class TpvCeca
         $this->_tipoMoneda = "978";
         $this->_terminalID = '00000003';
         $this->_modo = '';
+        $this->_tipo_anu = '';
     }
 
     /**
@@ -314,6 +321,20 @@ class TpvCeca
             throw new \Exception('Falta agregar Modo, Obligatorio en anulaciones');
         }
         
+    }
+
+    /**
+     * Asignar el tipo de anulación (solo modo Anulacion)
+     * @param string $tipoAnu 'P' = anulación parcial, 'T' = total (según convenio CECA).
+     *                        Vacío (por defecto) no añade el campo TIPO_ANU: comportamiento idéntico a la anulación total clásica.
+     */
+    public function setTipoAnu($tipoAnu = '')
+    {
+        $tipoAnu = trim($tipoAnu);
+
+        if (strlen($tipoAnu) > 0) {
+            $this->_tipo_anu = $tipoAnu;
+        }
     }
 
     /**
@@ -749,6 +770,12 @@ class TpvCeca
         {
             $parametrosArray["Referencia"] = $this->_referencia;
             $parametrosArray["modo"] = "anularOperacionExt";
+
+            // Devolución parcial/total (TIPO_ANU='P'/'T'). Va FUERA de la cadena de firma,
+            // igual que en los plugins oficiales de Cecabank.
+            if (strlen(trim($this->_tipo_anu)) > 0) {
+                $parametrosArray["TIPO_ANU"] = $this->_tipo_anu;
+            }
         }
 
         return $parametrosArray;
@@ -779,6 +806,14 @@ class TpvCeca
                                                 "&Firma=".$this->_firma.
                                                 "&Cifrado=".$this->_cifrado.
                                                 "&Idioma=".$this->_idioma;
+
+        // Devolución parcial/total (TIPO_ANU='P'/'T'). Va FUERA de la cadena de firma,
+        // igual que en los plugins oficiales de Cecabank.
+        if(strlen(trim($this->_modo)) > 0 && trim($this->_modo) == "Anulacion"
+            && strlen(trim($this->_tipo_anu)) > 0)
+        {
+            $cancellationUrl .= "&TIPO_ANU=".$this->_tipo_anu;
+        }
 
         return $cancellationUrl;
     }

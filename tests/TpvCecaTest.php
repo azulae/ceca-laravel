@@ -200,6 +200,73 @@ class TpvCecaTest extends TestCase
         $this->assertStringContainsString('&Firma=', $url);
     }
 
+    public function test_la_anulacion_sin_settipoanu_no_envia_tipo_anu_regresion_210()
+    {
+        $clave = $this->claveHmac();
+        $tpv = $this->tpvCompleto('HMAC', $clave);
+        $tpv->setModo('Anulacion');
+        $tpv->setReferencia('12005238811803201324076007000');
+        $tpv->setEntorno('produccion');
+
+        $params = $tpv->getParametersArray();
+        $url = $tpv->getCancellationUrl();
+
+        // Sin setTipoAnu(), el array y la URL quedan idénticos a la 2.1.0.
+        $this->assertArrayNotHasKey('TIPO_ANU', $params);
+        $this->assertStringNotContainsString('TIPO_ANU', $url);
+    }
+
+    public function test_la_anulacion_parcial_envia_tipo_anu_sin_alterar_la_firma()
+    {
+        $clave = $this->claveHmac();
+        $tpv = $this->tpvCompleto('HMAC', $clave);
+        $tpv->setModo('Anulacion');
+        $tpv->setReferencia('12005238811803201324076007000');
+
+        // Devolución parcial: importe menor que el pagado y TIPO_ANU='P'.
+        $tpv->setImporte('5,00');
+        $tpv->setTipoAnu('P');
+
+        $params = $tpv->getParametersArray();
+
+        $this->assertSame('P', $params['TIPO_ANU']);
+
+        // TIPO_ANU NO forma parte de la cadena de firma (getRefundSignature oficial de Cecabank).
+        $cadena = $clave . '0864012470000554027000000031000000037525009782'
+            . '12005238811803201324076007000HMAC';
+
+        $this->assertSame($cadena, $this->valorPrivado($tpv, '_cadena'));
+        $this->assertSame(
+            $this->firmaHmacReferencia($cadena, $clave, '100000003752'),
+            $params['Firma']
+        );
+    }
+
+    public function test_settipoanu_con_valor_vacio_es_un_noop()
+    {
+        $tpv = $this->tpvCompleto('SHA2', 'miclave');
+        $tpv->setModo('Anulacion');
+        $tpv->setReferencia('12005238811803201324076007000');
+        $tpv->setTipoAnu('   ');
+
+        $params = $tpv->getParametersArray();
+
+        $this->assertArrayNotHasKey('TIPO_ANU', $params);
+    }
+
+    public function test_la_url_de_anulacion_incluye_tipo_anu_cuando_esta_configurado()
+    {
+        $tpv = $this->tpvCompleto();
+        $tpv->setModo('Anulacion');
+        $tpv->setReferencia('12005238811803201324076007000');
+        $tpv->setEntorno('produccion');
+        $tpv->setTipoAnu('P');
+
+        $url = $tpv->getCancellationUrl();
+
+        $this->assertStringContainsString('&TIPO_ANU=P', $url);
+    }
+
     public function test_comprueba_la_firma_de_la_notificacion_con_hmac()
     {
         $clave = $this->claveHmac();

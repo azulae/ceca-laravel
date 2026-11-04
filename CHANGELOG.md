@@ -2,6 +2,13 @@
 
 All Notable changes to `Ceca` will be documented in this file
 
+## Version 2.1.1 (2026-11-04)
+
+### Added
+- Soporte de devoluciones parciales en modo `Anulacion`: nuevo método `setTipoAnu()` (valores `'P'` = parcial, `'T'` = total según convenio CECA). Cuando tiene valor se añade el campo `TIPO_ANU` al array de parámetros (`getParametersArray()`) y a la URL de anulación (`getCancellationUrl()`).
+- `TIPO_ANU` no forma parte de la cadena de firma (igual que el `getRefundSignature` de los plugins oficiales de Cecabank): la firma SHA2/HMAC no cambia.
+- Sin llamar a `setTipoAnu()`, los parámetros enviados son idénticos a los de la 2.1.0 (la anulación total existente no cambia de comportamiento).
+
 ## 1.0.0 (2021-08-24)
 
 ### Added
